@@ -1,0 +1,27 @@
+from django.shortcuts import render
+from django.contrib.auth import authenticate,login
+from django.http import HttpResponse
+from .form import LoginForm
+
+def login_demo(request):
+    if request.method == 'POST':
+        login_form = LoginForm(request.POST)
+        if login_form.is_valid():
+            cd = login_form.cleaned_data
+            user = authenticate(username=cd['user_name'],password=cd['passwd'])
+            if user:
+                login(request,user)
+                return render(request,'success.html')
+            else:
+                return render(request,'fail.html',{'form':login_form})
+        else:
+            return render(request,'fail.html',{'form':login_form})
+    if request.method == 'GET':
+        login_form = LoginForm()
+        return render(request,'login.html',{'form':login_form})
+    else:
+        result = HttpResponse('Please use get or post to access')
+        return result
+
+
+# Create your views here.
